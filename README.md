@@ -20,9 +20,10 @@ Lie_Detection-_ML2026/
 ├── openface_build_dataset.py         # Aggregates features, applies baseline normalization
 ├── openfacemouth_build_dataset.py    # Variant of the dataset builder
 ├── openface_evaluate.py              # Subject-grouped CV, models, permutation tests
-├── single_image_test.py              # Quick check: run one image through the face extractor
 ├── weights/                          # OpenFace model weights (see below)
 ├── annotated.jpg                     # Example annotated face output
+├── images/
+│   └── openface_example.jpg          # Example descriptor output used in this README
 └── .gitignore.txt
 ```
 
@@ -59,7 +60,7 @@ Each subject needs at least one baseline video, and you need at least 2 subjects
 ## Requirements
 
 - Python 3.9+
-- [OpenFace 3.0](https://github.com/CMU-MultiComp-Lab/OpenFace-3.0) (`openface` package) and its pretrained weights in `weights/`: `Alignment_RetinaFace.pth`, `MTL_backbone.pth`, and `mobilenetV1X0.25_pretrain.tar` (the face detector loads this one via a relative path, so scripts must run from the project folder)
+- [OpenFace 3.0](https://github.com/CMU-MultiComp-Lab/OpenFace-3.0) (`openface` package) and its pretrained weights in `weights/`: `Alignment_RetinaFace.pth`, `MTL_backbone.pth`, and `mobilenetV1X0.25_pretrain.tar` (the face detector loads this one via a relative path, so run the scripts from the project folder)
 - `torch`, `opencv-python`, `numpy`, `pandas`, `scikit-learn`
 - `opensmile`, `faster-whisper`, `imageio-ffmpeg`
 
@@ -84,25 +85,18 @@ python openface_evaluate.py            # 4. cross-validate and report
 
 Both extraction scripts skip videos that already have an output CSV, so you can re-run them to resume. Settings you may want to change live at the top of each file (`SAMPLE_FPS`, `WHISPER_MODEL`, `PAUSE_MIN`, `MIN_FACE_RATIO`, `USE_BASELINE`, `USE_AUDIO`, `N_PERMUTATIONS`).
 
-### Testing a Single Image
+## Example Output
 
-To check the face extraction on one photo without running the whole pipeline, use `single_image_test.py`. It calls the same `process_frame()` function that `openface_extraction.py` runs on every video frame, so the descriptors match what ends up in `features/frames/*.csv`.
+The face extraction step produces one row of descriptors per sampled frame. For a single frame, OpenFace returns:
 
-Place it in the project folder (next to `openface_extraction.py` and `weights/`) and run it from the environment where OpenFace is installed, putting the image path in quotes:
+![Example OpenFace output for one frame](images/openface_example.jpg)
 
-```bash
-python single_image_test.py "C:\path\to\image.jpg"
-```
+- **Face box and detection confidence** from the RetinaFace detector.
+- **8 emotion probabilities** (`emo_p0` to `emo_p7`: neutral, happy, sad, surprise, fear, disgust, anger, contempt).
+- **Gaze** as yaw and pitch (`gaze_yaw`, `gaze_pitch`), shown as the arrow on the face.
+- **8 facial action units** (`au_0` to `au_7`), all of which are used as model features.
 
-It produces:
-
-- **Console output:** detection confidence, face box, the 8 emotion probabilities, gaze yaw/pitch, and all 8 action units (the ones used as model features are starred).
-- **`annotated_single.jpg`:** the photo with the face box, top emotion, and a gaze arrow, plus a side panel showing every descriptor as labeled bars.
-- **`single_image_result.csv`:** the one-row frame record, in the same column format the extraction script writes.
-
-Both output files are saved in the project folder, not in `features/`, so they can't be picked up by the dataset builder. If the CSV is locked (for example, open in Excel), the script saves a timestamped copy instead.
-
-A single image can't produce `head_move` and `size_change` (they compare consecutive frames) or the per-video statistics (they need 3+ frames and a baseline video), so those show as blank.
+Head movement and face-size change are computed between consecutive frames, and the per-video statistics (mean, std, min, max, slope, mean absolute change) are computed across all frames of a video, so they don't appear in a single-frame view. In the full pipeline these frame-level values are aggregated per video and normalized against the subject's baseline.
 
 ## Features
 
