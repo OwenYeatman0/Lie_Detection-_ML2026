@@ -22,8 +22,7 @@ Lie_Detection-_ML2026/
 ├── openface_evaluate.py              # Subject-grouped CV, models, permutation tests
 ├── weights/                          # OpenFace model weights (see below)
 ├── annotated.jpg                     # Example annotated face output
-├── images/
-│   └── openface_example.jpg          # Example descriptor output used in this README
+├── annotated_single.jpg              # Example descriptor output shown in this README
 └── .gitignore.txt
 ```
 
@@ -89,7 +88,7 @@ Both extraction scripts skip videos that already have an output CSV, so you can 
 
 The face extraction step produces one row of descriptors per sampled frame. For a single frame, OpenFace returns:
 
-![Example OpenFace output for one frame](images/openface_example.jpg)
+![Example OpenFace output for one frame](annotated_single.jpg)
 
 - **Face box and detection confidence** from the RetinaFace detector.
 - **8 emotion probabilities** (`emo_p0` to `emo_p7`: neutral, happy, sad, surprise, fear, disgust, anger, contempt).
