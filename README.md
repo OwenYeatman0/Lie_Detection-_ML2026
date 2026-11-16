@@ -118,8 +118,6 @@ Head movement and face-size change are computed between consecutive frames, and 
 
 ### Results
 
-Add your results here after running the evaluation:
-
 | Features | Model | Accuracy | p-value |
 |---|---|---|---|
 | face | logistic regression | _TBD_ | _TBD_ |
