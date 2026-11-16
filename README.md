@@ -130,7 +130,3 @@ Head movement and face-size change are computed between consecutive frames, and 
 - Baseline normalization requires a baseline video for every subject.
 - Behavior in staged or scripted lies may not generalize to real-world deception.
 - Lighting, camera angle, accents, and recording quality all affect the extracted features.
-
-## License
-
-No license specified yet. Consider adding one (for example MIT) if you want others to reuse the code.
